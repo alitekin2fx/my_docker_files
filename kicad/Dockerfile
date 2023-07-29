@@ -85,8 +85,6 @@ RUN set -ex; \
     
 FROM debian:bookworm-slim AS runtime
 ARG USER_NAME=kicad
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
 
 # install runtime dependencies 
 RUN apt-get update && \
@@ -126,13 +124,16 @@ RUN ldconfig -l /usr/bin/_pcbnew.kiface
 RUN pip3 install kikit --break-system-packages
 
 # cleanup
-RUN apt-get clean autoclean; \
-    apt-get autoremove -y; \
+RUN apt-get clean autoclean && \
+    apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-RUN groupadd --gid $USER_GID $USER_NAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USER_NAME \
-    && usermod -aG sudo $USER_NAME \
-    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
+## Add a user without password
+RUN useradd -m $USER_NAME && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USER_NAME
+WORKDIR /home/$USER_NAME
+
+## Sets the default shell
+ENV SHELL /bin/bash
+
