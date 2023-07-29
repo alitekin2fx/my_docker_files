@@ -130,7 +130,7 @@ RUN apt-get clean autoclean && \
 
 ## Add a user without password
 RUN useradd -m $USER_NAME && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 USER $USER_NAME
 WORKDIR /home/$USER_NAME
 

@@ -10,6 +10,7 @@ COPY en.stm32cubemx-lin_v6-7-0.zip /tmp/en.stm32cubemx-lin_v6-7-0.zip
 
 WORKDIR /tmp
 RUN unzip -q en.stm32cubemx-lin_v6-7-0.zip && \
+    rm en.stm32cubemx-lin_v6-7-0.zip && \
     ./SetupSTM32CubeMX-6.7.0 auto-install.xml
 
 # cleanup
@@ -20,7 +21,7 @@ RUN apt-get clean autoclean && \
 
 ## Add a user without password
 RUN useradd -m $USER_NAME && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 USER $USER_NAME
 WORKDIR /home/$USER_NAME
 
